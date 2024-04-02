@@ -55,7 +55,7 @@ object HttpApi{
 data class ApiResponse(
     val status: Int,
     val message: String,
-    val data: List<Map<String, Any>?>
+    val data: List<Map<String, Any>>
 )
 
 data class ApiResponseSingle(

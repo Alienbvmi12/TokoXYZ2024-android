@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class LoginSessionManager(context: Context) {
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE)
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
 
     fun saveToken(token: String){
         sharedPreferences.edit().putString("token", "Bearer $token").apply()
