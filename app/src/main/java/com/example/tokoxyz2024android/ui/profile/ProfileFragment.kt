@@ -22,17 +22,21 @@ class ProfileFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val notificationsViewModel =
+        val viewModel =
             ViewModelProvider(this).get(ProfileViewModel::class.java)
-
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        viewModel.profileResult.observe(viewLifecycleOwner){
+            val data = it.data
+            if(it.status in 200..299){
+                binding.name.text = data["nama"]
+                binding.username.text = "@" + data["username"]
+                binding.address.text = data["alamat"]
+            }
         }
-        return root
+        viewModel.getProfile()
+
+        return binding.root
     }
 
     override fun onDestroyView() {

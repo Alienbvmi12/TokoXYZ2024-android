@@ -7,7 +7,7 @@ class LoginSessionManager(context: Context) {
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE)
 
     fun saveToken(token: String){
-        sharedPreferences.edit().putString("token", token).apply()
+        sharedPreferences.edit().putString("token", "Bearer $token").apply()
     }
 
     fun getToken(): String?{
