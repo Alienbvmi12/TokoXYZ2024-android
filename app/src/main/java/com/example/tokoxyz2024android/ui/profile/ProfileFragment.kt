@@ -1,12 +1,16 @@
 package com.example.tokoxyz2024android.ui.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.tokoxyz2024android.AuthActivity
+import com.example.tokoxyz2024android.data.storage.LoginSessionManager
 import com.example.tokoxyz2024android.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
@@ -35,6 +39,17 @@ class ProfileFragment : Fragment() {
             }
         }
         viewModel.getProfile()
+
+        viewModel.logoutResult.observe(viewLifecycleOwner){
+            if(it.status in 200..299){
+                Toast.makeText(requireContext(), "Berhasil Logout", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(requireContext(), AuthActivity::class.java))
+            }
+        }
+
+        binding.logout.setOnClickListener{
+            viewModel.logout()
+        }
 
         return binding.root
     }

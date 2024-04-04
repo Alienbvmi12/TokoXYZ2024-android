@@ -13,6 +13,7 @@ import android.os.Environment
 import android.os.StrictMode
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.example.tokoxyz2024android.R
 import com.example.tokoxyz2024android.adapter.InvoiceAdapter
 import com.example.tokoxyz2024android.data.model.ApiResponse
@@ -37,7 +38,7 @@ class InvoiceActivity : AppCompatActivity() {
         var tanggalTransaksi = ""
 
         for(data in transaksi.data){
-            tanggalTransaksi = data["tgl_transaksi"].toString()
+            tanggalTransaksi = data["tgl_transaksi"].toString() + "_" + data["no_transaksi"].toString()
             totalHarga += data["harga"].toString().toDouble() * data["qty"].toString().toDouble()
         }
 
@@ -77,8 +78,9 @@ class InvoiceActivity : AppCompatActivity() {
         document.finishPage(page)
 
         val fileName = "invoice_$date.pdf"
+        val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         val file = File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            path,
             fileName
         )
 
@@ -87,6 +89,7 @@ class InvoiceActivity : AppCompatActivity() {
             document.writeTo(outputStream)
             outputStream.flush()
             outputStream.close()
+            Toast.makeText(this, "File disimpan di: $path", Toast.LENGTH_SHORT).show()
             return file
         } catch (e: Exception){
             e.printStackTrace()
@@ -106,7 +109,7 @@ class InvoiceActivity : AppCompatActivity() {
 
         val builder = StrictMode.VmPolicy.Builder()
         StrictMode.setVmPolicy(builder.build())
-        
+
         startActivity(Intent.createChooser(intent, "Bagikan Dengan"))
     }
 }
