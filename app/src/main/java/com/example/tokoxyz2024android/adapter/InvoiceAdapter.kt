@@ -13,6 +13,8 @@ import com.example.tokoxyz2024android.data.model.BASE_URL_NO_API
 import com.example.tokoxyz2024android.data.model.BarangItem
 import com.example.tokoxyz2024android.databinding.ListItemBinding
 import com.example.tokoxyz2024android.ui.home.HomeViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 class InvoiceAdapter(private val dataset: List<Map<String, Any>>): RecyclerView.Adapter<InvoiceAdapter.InvoiceAdapterViewHolder>(){
     class InvoiceAdapterViewHolder(val view: View): RecyclerView.ViewHolder(view){
@@ -34,9 +36,10 @@ class InvoiceAdapter(private val dataset: List<Map<String, Any>>): RecyclerView.
 
     override fun onBindViewHolder(holder: InvoiceAdapterViewHolder, position: Int) {
         val item = dataset[position]
+        val formater = NumberFormat.getNumberInstance(Locale("id", "ID"))
         holder.barang.text = item["barang"].toString()
-        holder.harga.text = item["harga"].toString()
-        holder.qty.text = item["qty"].toString()
-        holder.subtotal.text = (item["subtotal"].toString().toInt() * item["qty"].toString().toInt()).toString()
+        holder.harga.text = "Rp. " + formater.format(item["harga"].toString().toDouble())
+        holder.qty.text = item["qty"].toString().toDouble().toInt().toString()
+        holder.subtotal.text = "Rp. " + formater.format(item["harga"].toString().toDouble() * item["qty"].toString().toDouble())
     }
 }

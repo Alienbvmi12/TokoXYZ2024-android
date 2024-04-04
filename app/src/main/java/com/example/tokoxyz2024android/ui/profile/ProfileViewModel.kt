@@ -30,12 +30,12 @@ class ProfileViewModel(app: Application) : AndroidViewModel(app) {
                 if(res.isSuccessful){
                     _profileResult.value = res.body()
                 } else{
-                    val fres = Gson().fromJson(res.errorBody().toString(), ApiResponseSingle::class.java)
+                    val fres = Gson().fromJson(res.errorBody()!!.string(), ApiResponseSingle::class.java)
                     _profileResult.value = fres
-                    Toast.makeText(context, fres.message, Toast.LENGTH_LONG)
+                    Toast.makeText(context, fres.message, Toast.LENGTH_LONG).show()
                 }
             } catch (ee: Exception){
-                Toast.makeText(context, "Oops, something went wrong", Toast.LENGTH_LONG)
+                Toast.makeText(context, "Oops, something went wrong", Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.example.tokoxyz2024android.ui.register
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.tokoxyz2024android.MainActivity
 import com.example.tokoxyz2024android.R
-import com.example.tokoxyz2024android.databinding.FragmentLoginBinding
 import com.example.tokoxyz2024android.databinding.FragmentRegisterBinding
-import com.example.tokoxyz2024android.ui.login.LoginViewModel
-import com.example.tokoxyz2024android.ui.login.RegisterViewModel
 
 
 class RegisterFragment: Fragment() {

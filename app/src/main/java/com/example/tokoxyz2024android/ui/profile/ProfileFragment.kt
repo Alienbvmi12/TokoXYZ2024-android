@@ -27,7 +27,7 @@ class ProfileFragment : Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
 
         viewModel.profileResult.observe(viewLifecycleOwner){
-            val data = it.data
+            val data = it.data!!
             if(it.status in 200..299){
                 binding.name.text = data["nama"]
                 binding.username.text = "@" + data["username"]

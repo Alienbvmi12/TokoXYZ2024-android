@@ -1,16 +1,17 @@
 package com.example.tokoxyz2024android.ui.home
 
 import android.app.Application
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tokoxyz2024android.data.model.ApiResponse
 import com.example.tokoxyz2024android.data.model.ApiResponseItems
 import com.example.tokoxyz2024android.data.model.ApiResponseSingle
 import com.example.tokoxyz2024android.data.model.BarangItem
+import com.example.tokoxyz2024android.data.model.CoSubmit
 import com.example.tokoxyz2024android.data.model.HttpApi
 import com.example.tokoxyz2024android.data.storage.LoginSessionManager
 import com.google.gson.Gson
@@ -37,6 +38,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun init() {
         _checkoutItem.value = mutableMapOf()
+        _listBarang.value = listOf()
     }
 
     fun searchBarang(q: String = "") {
@@ -47,14 +49,17 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     q
                 )
                 if (res.isSuccessful) {
-                    _listBarang.value = res.body()?.data
+                    _listBarang.value = res.body()!!.data
+                    Log.v("GW", res.body().toString())
                 } else {
                     val errRes =
-                        Gson().fromJson(res.errorBody().toString(), ApiResponseItems::class.java)
-                    Toast.makeText(context, errRes.message, Toast.LENGTH_LONG)
+                        Gson().fromJson(res.errorBody()!!.string(), ApiResponseItems::class.java)
+                    Toast.makeText(context, errRes.message, Toast.LENGTH_LONG).show()
+                    Log.v("GW", errRes.message)
                 }
             } catch (ee: Exception) {
-                Toast.makeText(context, "Oops, something went wrong", Toast.LENGTH_LONG)
+                Log.e("GWS Error", ee.toString())
+                Toast.makeText(context, "Oops, something went wrong", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -66,8 +71,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 cekotItem.value!![item.kodeBarang] = CoItem(
                     item.id, item.harga, 1
                 )
+                return add
             }
-            return add
+            else{
+                return 0
+            }
         }
         else{
             val cil = cekotItem.value!![item.kodeBarang]!!.qty + add
@@ -79,10 +87,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun getSelectedItemQty(kodeBarang: String): Int {
+        return _checkoutItem.value?.get(kodeBarang)?.qty ?: 0
+    }
+
     fun checkout(){
         viewModelScope.launch {
-            val list = checkoutItem.value!!.values.toList()
-            if(list.isNotEmpty()){
+            val list2 = checkoutItem.value!!.values.toList()
+            val list = CoSubmit(list2)
+            if(list2.size > 0){
                 try{
                     val res = HttpApi.retrofitService.checkout(
                         userSessionManager.getToken().toString(), list
@@ -90,18 +103,21 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
                     if(res.isSuccessful){
                         _coResponse.value = res.body()
+                        Log.v("MAG", "Success")
                     } else {
+                        Log.v("MAGs", "Alert")
                         val errRes =
-                            Gson().fromJson(res.errorBody().toString(), ApiResponse::class.java)
+                            Gson().fromJson(res.errorBody()!!.string(), ApiResponse::class.java)
                         _coResponse.value = errRes
-                        Toast.makeText(context, errRes.message, Toast.LENGTH_LONG)
+                        Toast.makeText(context, errRes.message, Toast.LENGTH_LONG).show()
                     }
                 } catch (ee: Exception){
-                    Toast.makeText(context, "Oops, something went wrong", Toast.LENGTH_LONG)
+                    Log.e("MAG Error", ee.toString())
+                    Toast.makeText(context, "Oops, something went wrong", Toast.LENGTH_LONG).show()
                 }
             }
             else{
-                Toast.makeText(context, "Mohon pilih barang terlebih dahulu!!", Toast.LENGTH_LONG)
+                Toast.makeText(context, "Mohon pilih barang terlebih dahulu!!", Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -3,11 +3,14 @@ package com.example.tokoxyz2024android.ui.home
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.tokoxyz2024android.InvoiceActivity
@@ -35,9 +38,12 @@ class HomeFragment : Fragment() {
         viewModel.init()
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+
+        viewModel.searchBarang()
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-        binding.recyclerView.adapter = ItemAdapter(viewModel)
+        binding.recyclerView.adapter = ItemAdapter(viewModel, binding)
 
         binding.search.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -47,16 +53,6 @@ class HomeFragment : Fragment() {
             }
         })
 
-        Handler().postDelayed(Runnable {
-            val items = viewModel.checkoutItem.value!!.values!!.toList()
-            var total = 0
-            for (item in items!!){
-                total += item!!.harga * item!!.qty!!.toInt()
-            }
-
-            val formatter = NumberFormat.getNumberInstance(Locale.ROOT)
-            binding.checkout.text = "Bayar Sekarang                        Rp." + formatter.format(total)
-        }, 100)
 
         binding.checkout.setOnClickListener{
             viewModel.checkout()

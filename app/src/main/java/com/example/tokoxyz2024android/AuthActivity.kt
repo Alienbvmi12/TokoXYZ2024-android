@@ -11,4 +11,10 @@ class AuthActivity : AppCompatActivity() {
 
         setContentView(binding.root)
     }
+
+    override fun onBackPressed() {
+        if(false){
+            super.onBackPressed()
+        }
+    }
 }

@@ -2,12 +2,14 @@ package com.example.tokoxyz2024android.ui.login
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.tokoxyz2024android.data.model.ApiResponse
+import com.example.tokoxyz2024android.data.model.ApiResponseError
 import com.example.tokoxyz2024android.data.model.ApiResponseSingle
 import com.example.tokoxyz2024android.data.model.HttpApi
 import com.example.tokoxyz2024android.data.storage.LoginSessionManager
@@ -17,6 +19,10 @@ import kotlinx.coroutines.launch
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private var _loginResult = MutableLiveData<ApiResponseSingle>()
     val loginResult: LiveData<ApiResponseSingle> = _loginResult
+
+    private var _loginError = MutableLiveData<ApiResponseError>()
+    val loginError: LiveData<ApiResponseError> = _loginError
+    var status = MutableLiveData<Boolean>(false)
     val context: Context = application
 
     val userSessionManager = LoginSessionManager(context)
@@ -31,15 +37,24 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     )
                 )
                 if(result.isSuccessful){
-                    _loginResult.value = result.body()
-                    userSessionManager.saveToken(result.body()!!.data["token"].toString())
+                    val rsu = result.body()!!
+                    Log.v("GW", rsu.toString())
+                    _loginResult.value = rsu
+                    userSessionManager.saveToken((result.body()!!.data!! as Map<String, String>)["token"].toString())
+                    Toast.makeText(context,  rsu.message, Toast.LENGTH_LONG).show()
+                    status.value = true
                 }
                 else{
-                    _loginResult.value = Gson().fromJson(result.errorBody()!!.toString(), ApiResponseSingle::class.java)
-                    Toast.makeText(context,  loginResult.value!!.message, Toast.LENGTH_LONG)
+                    val rsu = Gson().fromJson(result.errorBody()!!.string(), ApiResponseError::class.java)
+                    Log.v("GW", rsu.toString())
+                    _loginError.value = rsu
+                    Toast.makeText(context, rsu.message, Toast.LENGTH_LONG).show()
+                    status.value = false
                 }
             } catch (ee: Exception){
-                Toast.makeText(context, "Internal Server Error", Toast.LENGTH_LONG)
+                Log.e("GWS Error", ee.toString())
+                Toast.makeText(context, "Internal Server Error", Toast.LENGTH_LONG).show()
+                status.value = false
             }
         }
     }

@@ -31,8 +31,8 @@ class LoginFragment: Fragment() {
             viewModel.login(binding.username.text.toString(), binding.password.text.toString())
         }
 
-        viewModel.loginResult.observe(viewLifecycleOwner){
-            if(it.status in 200..299){
+        viewModel.status.observe(viewLifecycleOwner){
+            if(it){
                 startActivity(Intent(requireContext(), MainActivity::class.java))
             }
         }
